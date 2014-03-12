@@ -2,7 +2,9 @@
 
 import gevent
 import gevent.monkey
+import werkzeug.serving
 from gevent.pywsgi import WSGIServer
+
 gevent.monkey.patch_all()
 
 from flask import Flask, request, Response, render_template
@@ -26,6 +28,13 @@ def sse_request():
 def page():
     return render_template('sse.html')
 
-if __name__ == '__main__':
+
+@werkzeug.serving.run_with_reloader
+def run_server():
+    app.debug = True
+
     http_server = WSGIServer(('127.0.0.1', 8001), app)
     http_server.serve_forever()
+
+if __name__ == '__main__':
+    run_server()
